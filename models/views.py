@@ -20,8 +20,7 @@ from flask import abort, flash, render_template, request, redirect
 # Главная
 @app.route('/')
 def home():
-    pass
-    # (код страницы админки)
+    return render_template('main.html')
 
 
 # ------------------------------------------------------

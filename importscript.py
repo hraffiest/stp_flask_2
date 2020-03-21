@@ -1,7 +1,7 @@
 import csv
 from __init__ import app
-from src.config import Config
-from src.models.models import db, Dish
+from config import Config
+from models.models import db, Dish
 
 
 with open('data.csv', 'r') as data:

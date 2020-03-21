@@ -1,12 +1,10 @@
 from flask import Flask
-from src.models.models import db
-from src.config import Config
+from models.models import db
+from config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
-
-from src.models.views import *
 
 with app.app_context():
     db.create_all()
