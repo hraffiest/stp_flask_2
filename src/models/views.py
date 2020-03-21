@@ -2,31 +2,40 @@ from __init__ import app, db
 from flask import abort, flash, render_template, request, redirect
 
 
-# ------------------------------------------------------
-# Декораторы авторизации
-def login_required(f):
-    pass
-    # (код декоратора)
-
-
-def admin_only(f):
-    pass
-    # (код декоратора)
+#
+# # ------------------------------------------------------
+# # Декораторы авторизации
+# def login_required(f):
+#     pass
+#     # (код декоратора)
+#
+#
+# def admin_only(f):
+#     pass
+#     # (код декоратора)
+#
 
 
 # ------------------------------------------------------
 # Главная
 @app.route('/')
-@login_required
 def home():
     pass
     # (код страницы админки)
 
 
 # ------------------------------------------------------
+# для корзины
+@app.route("/cart/", methods=["GET", "POST"])
+def show_the_cart():
+    pass
+    # (код страницы для корзины)
+
+
+# ------------------------------------------------------
 # Страница аутентификации
 @app.route("/login", methods=["GET", "POST"])
-def login():
+def do_the_login():
     pass
     # (код страницы аутентификации)
 
@@ -34,26 +43,30 @@ def login():
 # ------------------------------------------------------
 # Страница выхода из админки
 @app.route('/logout', methods=["POST"])
-@login_required
-def logout():
+def do_the_logout():
     pass
     # (код выхода из админки)
 
 
 # ------------------------------------------------------
 # Страница добавления пользователя
-@app.route("/registration", methods=["GET", "POST"])
-@admin_only
-@login_required
-def registration():
+@app.route("/register", methods=["GET", "POST"])
+def do_the_reg():
     pass
     # (код страницы регистрации)
 
 
 # ------------------------------------------------------
-# Страница смены пароля
-@app.route("/change-password", methods=["GET", "POST"])
-@login_required
-def change_password():
+# для подтверждения отправки
+@app.route("/ordered/", methods=["GET", "POST"])
+def show_the_order():
     pass
-    # (код страницы смены пароля)
+    # (код страницы для подтверждения отправки)
+
+
+# ------------------------------------------------------
+# для личного кабинета
+@app.route("/account/", methods=["GET", "POST"])
+def show_the_lk():
+    pass
+    # (код страницы для лк)
