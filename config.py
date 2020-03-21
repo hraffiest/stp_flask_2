@@ -9,5 +9,5 @@ class Config:
     SECRET_KEY = "asdfasdmlasdf"
     SQLALCHEMY_DATABASE_URI = db_path
     SQLALCHEMY_TRACK_MODIFICATIONS = True
-    PICTURE_PATCH = current_path + '/static/assets/pictures'
+    PICTURE_PATCH = current_path + '/static/assets/pictures/'
 
