@@ -37,10 +37,10 @@ class Order(db.Model):
 class Dish(db.Model):
     __tablename__ = 'dishes'
     d_id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(20), nullable=False)
-    picture = db.Column(db.String(50), nullable=False)
+    title = db.Column(db.String(180), nullable=False)
+    picture = db.Column(db.String, nullable=False)
     price = db.Column(db.Integer, nullable=False)
-    description = db.Column(db.String(150), nullable=False)
+    description = db.Column(db.String(250), nullable=False)
     category = db.relationship("Category", back_populates="dishes")
     cat_id = db.Column(db.Integer, db.ForeignKey("categories.c_id"))
     orders = db.relationship(

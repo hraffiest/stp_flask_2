@@ -8,5 +8,6 @@ db.init_app(app)
 
 from src.models.views import *
 
-# with app.app_context():
-#     db.create_all()
+with app.app_context():
+    db.create_all()
+
