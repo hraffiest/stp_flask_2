@@ -1,4 +1,6 @@
 from __init__ import app, db
+from models import *
+import json
 from flask import abort, flash, render_template, request, redirect
 
 
@@ -20,52 +22,61 @@ from flask import abort, flash, render_template, request, redirect
 # Главная
 @app.route('/')
 def home():
-    return render_template('main.html')
+    # cook the dict 'dishes_d' for main page
+    dishes_d = dict()
+    cats = db.session.query(Category).order_by(Category.c_id).all()
+    dishes = db.session.query(Dish).order_by(Dish.cat_id).all()
+    for cat in cats:
+        dishes_d[cat.title] = []
+        for dish in dishes:
+            if cat.c_id == dish.cat_id:
+                dishes_d[cat.title].append(dish)
+    return render_template('main.html', dishes_d=dishes_d)
 
-
-# ------------------------------------------------------
-# для корзины
-@app.route("/cart/", methods=["GET", "POST"])
-def show_the_cart():
-    pass
-    # (код страницы для корзины)
-
-
-# ------------------------------------------------------
-# Страница аутентификации
-@app.route("/login", methods=["GET", "POST"])
-def do_the_login():
-    pass
-    # (код страницы аутентификации)
-
-
-# ------------------------------------------------------
-# Страница выхода из админки
-@app.route('/logout', methods=["POST"])
-def do_the_logout():
-    pass
-    # (код выхода из админки)
-
-
-# ------------------------------------------------------
-# Страница добавления пользователя
-@app.route("/register", methods=["GET", "POST"])
-def do_the_reg():
-    pass
-    # (код страницы регистрации)
-
-
-# ------------------------------------------------------
-# для подтверждения отправки
-@app.route("/ordered/", methods=["GET", "POST"])
-def show_the_order():
-    pass
-    # (код страницы для подтверждения отправки)
-
-
-# ------------------------------------------------------
-# для личного кабинета
-@app.route("/account/", methods=["GET", "POST"])
-def show_the_lk():
-    pass
-    # (код страницы для лк)
+#
+# # ------------------------------------------------------
+# # для корзины
+# @app.route("/cart/", methods=["GET", "POST"])
+# def show_the_cart():
+#     pass
+#     # (код страницы для корзины)
+#
+#
+# # ------------------------------------------------------
+# # Страница аутентификации
+# @app.route("/login", methods=["GET", "POST"])
+# def do_the_login():
+#     pass
+#     # (код страницы аутентификации)
+#
+#
+# # ------------------------------------------------------
+# # Страница выхода из админки
+# @app.route('/logout', methods=["POST"])
+# def do_the_logout():
+#     pass
+#     # (код выхода из админки)
+#
+#
+# # ------------------------------------------------------
+# # Страница добавления пользователя
+# @app.route("/register", methods=["GET", "POST"])
+# def do_the_reg():
+#     pass
+#     # (код страницы регистрации)
+#
+#
+# # ------------------------------------------------------
+# # для подтверждения отправки
+# @app.route("/ordered/", methods=["GET", "POST"])
+# def show_the_order():
+#     pass
+#     # (код страницы для подтверждения отправки)
+#
+#
+# # ------------------------------------------------------
+# # для личного кабинета
+# @app.route("/account/", methods=["GET", "POST"])
+# def show_the_lk():
+#     pass
+#     # (код страницы для лк)
