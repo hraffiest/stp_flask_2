@@ -7,3 +7,6 @@ app.config.from_object(Config)
 db.init_app(app)
 
 from src.models.views import *
+
+# with app.app_context():
+#     db.create_all()
