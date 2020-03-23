@@ -3,6 +3,7 @@ from models import *
 import json
 from pymorphy2 import MorphAnalyzer
 from flask import abort, flash, render_template, request, redirect, session, url_for
+from forms import OrderForm
 
 
 def get_cart_info(ids):
@@ -63,12 +64,30 @@ def add_to_cart(d_id):
     return redirect('/cart/')
 
 
+@app.route("/delfromcart/<int:d_id>/")
+def del_from_cart(d_id):
+    cart = session.get("cart")
+    cart.remove(d_id)
+    session['cart'] = cart
+    return redirect('/cart/')
+
+
 # ------------------------------------------------------
 # для корзины
 @app.route("/cart/", methods=['GET', 'POST'])
 def show_the_cart():
     cart_info = get_right_cart_end()
-    return render_template('cart.html', cart_info=cart_info)
+    form = OrderForm()
+    cart = session.get("cart")
+    dishes_for_buy = []
+    for d in cart:
+        dishes_for_buy.append(db.session.query(Dish).get(d))
+    if request.method == "POST":
+        if form.validate_on_submit():
+            order =
+        # return render_template('cart.html', cart_info=cart_info, form=form)
+
+    return render_template('cart.html', cart_info=cart_info, form=form, dishes=dishes_for_buy)
 #
 #
 # # ------------------------------------------------------
