@@ -83,6 +83,7 @@ def show_the_cart():
     for d in cart:
         dishes_for_buy.append(db.session.query(Dish).get(d))
     if request.method == "POST":
+        print(form.errors)
         if form.validate_on_submit():
             pass
         else:
