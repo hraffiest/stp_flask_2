@@ -11,3 +11,5 @@ def password_check(form, field):
 
 class LoginForm(FlaskForm):
     pass
+
+class OrderForm(FlaskForm):

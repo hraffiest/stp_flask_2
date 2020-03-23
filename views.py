@@ -1,7 +1,8 @@
 from __init__ import app, db
 from models import *
 import json
-from flask import abort, flash, render_template, request, redirect, session
+from pymorphy2 import MorphAnalyzer
+from flask import abort, flash, render_template, request, redirect, session, url_for
 
 
 def get_cart_info(ids):
@@ -9,6 +10,18 @@ def get_cart_info(ids):
     for id in ids:
         cart.append(db.session.query(Dish).get(id).price)
     return [len(ids), sum(cart)]
+
+
+def get_right_cart_end():
+    morph = MorphAnalyzer()
+    word = morph.parse('блюдо')[0]
+    cart = session.get("cart")
+    cart_info = [0, 0]
+    if cart:
+        cart_info = get_cart_info(session['cart'])
+        cart_info1 = '{} {}'.format(cart_info[0], word.make_agree_with_number(cart_info[0]).word)
+        cart_info[0] = cart_info1
+    return cart_info
 
 
 #
@@ -30,10 +43,7 @@ def get_cart_info(ids):
 @app.route('/')
 def home():
     # cook the dict 'dishes_d' for main page
-    cart = session.get("cart")
-    cart_info = [0, 0]
-    if cart:
-        cart_info = get_cart_info(session['cart'])
+    cart_info = get_right_cart_end()
     dishes_d = dict()
     cats = db.session.query(Category).order_by(Category.c_id).all()
     dishes = db.session.query(Dish).order_by(Dish.cat_id).all()
@@ -45,7 +55,7 @@ def home():
     return render_template('main.html', dishes_d=dishes_d, cart_info=cart_info)
 
 
-@app.route("/addcart/<int:d_id>", methods=['POST'])
+@app.route("/addtocart/<int:d_id>/")
 def add_to_cart(d_id):
     cart = session.get("cart", [])
     cart.append(d_id)
@@ -57,8 +67,8 @@ def add_to_cart(d_id):
 # для корзины
 @app.route("/cart/", methods=['GET', 'POST'])
 def show_the_cart():
-    pass
-    # (код страницы для корзины)
+    cart_info = get_right_cart_end()
+    return render_template('cart.html', cart_info=cart_info)
 #
 #
 # # ------------------------------------------------------
