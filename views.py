@@ -2,8 +2,10 @@ from __init__ import app, db
 from models import *
 import json
 from pymorphy2 import MorphAnalyzer
+from sqlalchemy.sql import func
 from flask import abort, flash, render_template, request, redirect, session, url_for
 from forms import OrderForm, RegistrationForm
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 def get_cart_info(ids):
@@ -118,19 +120,18 @@ def do_the_reg():
     cart_info = get_right_cart_end()
     # Создаем форму
     form = RegistrationForm()
-
     if request.method == "POST":
-        # создаем пользователя
         if form.validate_on_submit():
             user = User()
-            user.username = form.username.data
-            user.password = form.password.data
+            user.mail = form.username.data
+            user.password_hash = form.password.data
             db.session.add(user)
             db.session.commit()
+            session['user_id'] = user.u_id
         else:
             return render_template("register.html", form=form, cart_info=cart_info)
-
-    return render_template("register.html", form=form, cart_info=cart_info)
+    else:
+        return render_template("register.html", form=form, cart_info=cart_info)
 #
 #
 # # ------------------------------------------------------

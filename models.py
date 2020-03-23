@@ -14,11 +14,26 @@ orders_dishes_association = db.Table(
 class User(db.Model):
     __tablename__ = 'users'
     u_id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(20), nullable=False)
+    name = db.Column(db.String(20))
     mail = db.Column(db.String(50), nullable=False)
-    password = db.Column(db.String(20), nullable=False)
-    address = db.Column(db.String(150), nullable=False)
+    _password_hash = db.Column(db.String(180), nullable=False)
+    address = db.Column(db.String(190))
     orders = db.relationship("Order", back_populates="user")
+
+    @property
+    def password_hash(self):
+        # Запретим прямое обращение к паролю
+        raise AttributeError("Вам не нужно знать пароль!")
+
+    @password_hash.setter
+    def password_hash(self, password):
+        # Устанавливаем пароль через этот метод
+        self._password_hash = generate_password_hash(password)
+
+    def password_valid(self, password):
+        # Проверяем пароль через этот метод
+        # Функция check_password_hash превращает password в хеш и сравнивает с хранимым
+        return check_password_hash(self.password_hash, password)
 
 
 class Order(db.Model):
