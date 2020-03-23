@@ -3,7 +3,7 @@ from models import *
 import json
 from pymorphy2 import MorphAnalyzer
 from flask import abort, flash, render_template, request, redirect, session, url_for
-from forms import OrderForm
+from forms import OrderForm, RegistrationForm
 
 
 def get_cart_info(ids):
@@ -83,7 +83,6 @@ def show_the_cart():
     for d in cart:
         dishes_for_buy.append(db.session.query(Dish).get(d))
     if request.method == "POST":
-        print(form.errors)
         if form.validate_on_submit():
             pass
         else:
@@ -108,12 +107,30 @@ def show_the_cart():
 #     # (код выхода из админки)
 #
 #
-# # ------------------------------------------------------
-# # Страница добавления пользователя
-# @app.route("/register", methods=["GET", "POST"])
-# def do_the_reg():
-#     pass
-#     # (код страницы регистрации)
+
+
+# ------------------------------------------------------
+# Страница добавления пользователя
+@app.route("/registration/", methods=["GET", "POST"])
+def do_the_reg():
+    if session.get("user_id"):
+        return redirect("/")
+    cart_info = get_right_cart_end()
+    # Создаем форму
+    form = RegistrationForm()
+
+    if request.method == "POST":
+        # создаем пользователя
+        if form.validate_on_submit():
+            user = User()
+            user.username = form.username.data
+            user.password = form.password.data
+            db.session.add(user)
+            db.session.commit()
+        else:
+            return render_template("register.html", form=form, cart_info=cart_info)
+
+    return render_template("register.html", form=form, cart_info=cart_info)
 #
 #
 # # ------------------------------------------------------

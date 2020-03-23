@@ -1,5 +1,30 @@
 {% extends 'base.html' %}
+{% block style %}
+<style>
+    /* Sticky footer styles
+    -------------------------------------------------- */
+    html {
+      position: relative;
+      min-height: 100%;
+    }
+    body {
+      margin-bottom: 60px; /* Margin bottom by footer height */
+    }
+    .footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 60px; /* Set the fixed height of the footer here */
+      line-height: 60px; /* Vertically center the text there */
+    }
+    .navbar {
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+  </style>
+{% endblock %}
 {% block content %}
+  {% include 'nav.html' %}
   <main class="container">
     <div class="row">
       <div class="col-8 col-lg-4 offset-2 offset-lg-4">
@@ -10,14 +35,14 @@
             <p class="h5 font-weight-light">Создайте аккаунт</p>
           </div>
           <div class="mt-5 form-label-group">
-            <p class="text-muted">Электропочта</p>
-            <input type="email" id="inputEmail" class="form-control" required autofocus>
-            <label for="inputEmail"></label>
+                  {{ form.username.label(class="text-muted") }}
+                  {{ form.username(autofocus=true, class="form-control") }}
           </div>
           <div class="form-label-group">
-            <p class="text-muted"> Пароль</p>
-            <input type="password" id="inputPassword" class="form-control" required>
-            <label for="inputPassword"></label>
+            <div class="mt-2 form-label-group">
+                  {{ form.password.label(class="text-muted") }}
+                  {{ form.password(class="form-control") }}
+          </div>
           </div>
           <div class="checkbox mb-3"></div>
           <button class="btn btn-lg btn-danger btn-block" type="submit">Зарегистрироваться</button>
