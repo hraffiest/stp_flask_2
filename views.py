@@ -78,14 +78,15 @@ def del_from_cart(d_id):
 def show_the_cart():
     cart_info = get_right_cart_end()
     form = OrderForm()
-    cart = session.get("cart")
+    cart = session.get("cart", [])
     dishes_for_buy = []
     for d in cart:
         dishes_for_buy.append(db.session.query(Dish).get(d))
     if request.method == "POST":
         if form.validate_on_submit():
-            order =
-        # return render_template('cart.html', cart_info=cart_info, form=form)
+            pass
+        else:
+            return render_template('cart.html', cart_info=cart_info, form=form, dishes=dishes_for_buy)
 
     return render_template('cart.html', cart_info=cart_info, form=form, dishes=dishes_for_buy)
 #
