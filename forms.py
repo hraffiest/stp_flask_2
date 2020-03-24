@@ -37,7 +37,8 @@ class OrderForm(FlaskForm):
     address = StringField('Адрес', [Length(min=4, message='Поле Адрес слишком короткое'),
                                     InputRequired(message='Поле Адрес обязательно для заполнения')])
 
-    email = HiddenField('email')
+    email = StringField('Email', [Email(message='Email введен неверно'),
+                                  InputRequired(message='Поле Email обязательно для заполнения')])
 
     telephone = StringField('Телефон для связи', [Length(min=4),
                                                   InputRequired(message='Поле Телефон обязательно для заполнения')])

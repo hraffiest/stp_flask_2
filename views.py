@@ -101,7 +101,7 @@ def show_the_cart():
             session.pop('cart')
             return redirect('/ordered/')
         return render_template('cart.html', cart_info=cart_info, form=form, dishes=dishes_for_buy)
-    form = OrderForm(price=cart_info[1], email=session['user']['user_id'])
+    form = OrderForm(price=cart_info[1])
     return render_template('cart.html', cart_info=cart_info, form=form, dishes=dishes_for_buy)
 
 
@@ -180,7 +180,8 @@ def show_the_order():
 
 # ------------------------------------------------------
 # для личного кабинета
-@app.route("/account/", methods=["GET", "POST"])
+@app.route("/account/", methods=["GET"])
 def show_the_lk():
     cart_info = get_right_cart_end()
-    return render_template('account.html', cart_info=cart_info)
+    orders = db.session.query(Order).filter(Order.buyer_id == session['user']['user_id']).all()
+    return render_template('account.html', cart_info=cart_info, orders=orders)
