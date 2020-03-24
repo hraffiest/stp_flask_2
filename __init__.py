@@ -8,10 +8,17 @@ app.config.from_object(Config)
 db.init_app(app)
 admin = Admin(app)
 
-admin.add_view(ModelView(User, db.session))
-admin.add_view(ModelView(Order, db.session))
-admin.add_view(ModelView(Dish, db.session))
-admin.add_view(ModelView(Category, db.session))
+
+class NewModel(ModelView):
+    can_create = False
+    can_edit = False
+    can_delete = False
+
+
+admin.add_view(NewModel(User, db.session))
+admin.add_view(NewModel(Order, db.session))
+admin.add_view(NewModel(Dish, db.session))
+admin.add_view(NewModel(Category, db.session))
 
 from views import *
 
