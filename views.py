@@ -71,19 +71,37 @@ def del_from_cart(d_id):
     cart = session.get("cart")
     cart.remove(d_id)
     session['cart'] = cart
+    session['cart_del'] = True
     return redirect('/cart/')
 
 
 # ------------------------------------------------------
 # для корзины
-@app.route("/cart/", methods=['GET'])
+@app.route("/cart/", methods=['GET', 'POST'])
 def show_the_cart():
     cart_info = get_right_cart_end()
-    form = OrderForm(price=cart_info[1])
     cart = session.get("cart", [])
     dishes_for_buy = []
     for d in cart:
         dishes_for_buy.append(db.session.query(Dish).get(d))
+    if request.method == "POST":
+        form = OrderForm()
+        if form.validate_on_submit():
+            dishes_ids = session['cart']
+            date = datetime.datetime.today()
+            user = db.session.query(User).get(session['user']['user_id'])
+            user.address = form.address.data
+            user.name = form.username.data
+            order = Order(final_price=form.price.data, date=date, buyer_id=user.u_id)
+            for ident in dishes_ids:
+                dish = db.session.query(Dish).get(ident)
+                order.dishes.append(dish)
+            db.session.add(order, user)
+            db.session.commit()
+            session.pop('cart')
+            return redirect('/ordered/')
+        return render_template('cart.html', cart_info=cart_info, form=form, dishes=dishes_for_buy)
+    form = OrderForm(price=cart_info[1], email=session['user']['user_id'])
     return render_template('cart.html', cart_info=cart_info, form=form, dishes=dishes_for_buy)
 
 
@@ -154,22 +172,10 @@ def do_the_reg():
 
 # ------------------------------------------------------
 # для подтверждения отправки
-@app.route("/ordered/", methods=["GET", "POST"])
+@app.route("/ordered/", methods=["GET"])
 def show_the_order():
-    if request.method == "POST":
-        form = OrderForm()
-        if form.validate_on_submit():
-            dishes_ids = session['cart']
-            date = datetime.datetime
-            user = db.session.query(User).get(session['user']['user_id'])
-            print(user)
-            user.address = form.address.data
-            user.name = form.username.data
-            order = Order(price=form.price.data, date=date, dishes=dishes_ids, buyer_id=user)
-            db.session.add(order, user)
-            db.session.commit()
-        return render_template('ordered.html')
-    return redirect('/cart/')
+    cart_info = ['0 блюд', 0]
+    return render_template('ordered.html', cart_info=cart_info)
 
 
 # ------------------------------------------------------
