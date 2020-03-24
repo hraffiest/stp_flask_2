@@ -4,7 +4,7 @@ import json
 from pymorphy2 import MorphAnalyzer
 from sqlalchemy.sql import func
 from flask import abort, flash, render_template, request, redirect, session, url_for
-from forms import OrderForm, RegistrationForm
+from forms import OrderForm, LoginForm, RegistrationForm
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -91,16 +91,35 @@ def show_the_cart():
             return render_template('cart.html', cart_info=cart_info, form=form, dishes=dishes_for_buy)
 
     return render_template('cart.html', cart_info=cart_info, form=form, dishes=dishes_for_buy)
-#
-#
-# # ------------------------------------------------------
-# # Страница аутентификации
-# @app.route("/login", methods=["GET", "POST"])
-# def do_the_login():
-#     pass
-#     # (код страницы аутентификации)
-#
-#
+
+
+# ------------------------------------------------------
+# Страница аутентификации
+@app.route("/login/", methods=["GET", "POST"])
+def do_the_login():
+    if session.get("user_id"):
+        return redirect('/')
+    cart_info = get_right_cart_end()
+    form = LoginForm()
+    if request.method == "POST":
+        if form.validate_on_submit():
+            user = db.session.query(User).filter(User.mail == form.username.data).first()
+            if user and user.password_valid(form.password.data):
+                session['user'] = {'user_id': user.u_id, 'mail': user.mail}
+                return redirect('/')
+            elif not user:
+                form.errors['auth'] = ['Пользователь с таким email не найден']
+                return render_template("login.html", form=form, cart_info=cart_info)
+            elif not user.password_valid(form.password.data):
+                form.errors['pass'] = ['Неверный пароль']
+                return render_template("login.html", form=form, cart_info=cart_info)
+            else:
+                return render_template("login.html", form=form, cart_info=cart_info)
+        else:
+            return render_template("login.html", form=form, cart_info=cart_info)
+    return render_template('login.html', cart_info=cart_info, form=form)
+
+
 # # ------------------------------------------------------
 # # Страница выхода из админки
 # @app.route('/logout', methods=["POST"])
@@ -122,12 +141,17 @@ def do_the_reg():
     form = RegistrationForm()
     if request.method == "POST":
         if form.validate_on_submit():
-            user = User()
-            user.mail = form.username.data
-            user.password_hash = form.password.data
-            db.session.add(user)
-            db.session.commit()
-            session['user_id'] = user.u_id
+            user = db.session.query(User).filter(User.mail == form.username.data).first()
+            if not user:
+                user = User()
+                user.mail = form.username.data
+                user.password_hash = form.password.data
+                db.session.add(user)
+                db.session.commit()
+                session['user'] = {'user_id': user.u_id, 'mail': user.mail}
+            else:
+                form.errors['auth'] = ['Пользователь с таким email уже существует']
+                return render_template("register.html", form=form, cart_info=cart_info)
         else:
             return render_template("register.html", form=form, cart_info=cart_info)
     else:

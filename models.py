@@ -33,7 +33,7 @@ class User(db.Model):
     def password_valid(self, password):
         # Проверяем пароль через этот метод
         # Функция check_password_hash превращает password в хеш и сравнивает с хранимым
-        return check_password_hash(self.password_hash, password)
+        return check_password_hash(self._password_hash, password)
 
 
 class Order(db.Model):
