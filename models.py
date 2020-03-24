@@ -40,7 +40,7 @@ class Order(db.Model):
     __tablename__ = 'orders'
     o_id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date, nullable=False)
-    status = db.Column(db.Boolean, nullable=False)
+    status = db.Column(db.Boolean)
     final_price = db.Column(db.Float, nullable=False)
     user = db.relationship("User", back_populates="orders")
     buyer_id = db.Column(db.Integer, db.ForeignKey("users.u_id"))

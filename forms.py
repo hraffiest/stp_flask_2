@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField
+from wtforms import StringField, PasswordField, HiddenField
 from wtforms.validators import DataRequired, Length, EqualTo, ValidationError, Email, InputRequired
 
 
@@ -42,3 +42,5 @@ class OrderForm(FlaskForm):
 
     telephone = StringField('Телефон для связи', [Length(min=4),
                                                   InputRequired(message='Поле Телефон обязательно для заполнения')])
+
+    price = HiddenField('price')

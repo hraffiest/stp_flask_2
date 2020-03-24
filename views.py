@@ -2,7 +2,7 @@ from __init__ import app, db
 from models import *
 import json
 from pymorphy2 import MorphAnalyzer
-from sqlalchemy.sql import func
+import datetime
 from flask import abort, flash, render_template, request, redirect, session, url_for
 from forms import OrderForm, LoginForm, RegistrationForm
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -76,20 +76,14 @@ def del_from_cart(d_id):
 
 # ------------------------------------------------------
 # для корзины
-@app.route("/cart/", methods=['GET', 'POST'])
+@app.route("/cart/", methods=['GET'])
 def show_the_cart():
     cart_info = get_right_cart_end()
-    form = OrderForm()
+    form = OrderForm(price=cart_info[1])
     cart = session.get("cart", [])
     dishes_for_buy = []
     for d in cart:
         dishes_for_buy.append(db.session.query(Dish).get(d))
-    if request.method == "POST":
-        if form.validate_on_submit():
-            pass
-        else:
-            return render_template('cart.html', cart_info=cart_info, form=form, dishes=dishes_for_buy)
-
     return render_template('cart.html', cart_info=cart_info, form=form, dishes=dishes_for_buy)
 
 
@@ -97,8 +91,8 @@ def show_the_cart():
 # Страница аутентификации
 @app.route("/login/", methods=["GET", "POST"])
 def do_the_login():
-    if session.get("user_id"):
-        return redirect('/')
+    if session.get('user'):
+        return redirect('/account/')
     cart_info = get_right_cart_end()
     form = LoginForm()
     if request.method == "POST":
@@ -106,7 +100,7 @@ def do_the_login():
             user = db.session.query(User).filter(User.mail == form.username.data).first()
             if user and user.password_valid(form.password.data):
                 session['user'] = {'user_id': user.u_id, 'mail': user.mail}
-                return redirect('/')
+                return redirect('/account/')
             elif not user:
                 form.errors['auth'] = ['Пользователь с таким email не найден']
                 return render_template("login.html", form=form, cart_info=cart_info)
@@ -120,21 +114,20 @@ def do_the_login():
     return render_template('login.html', cart_info=cart_info, form=form)
 
 
-# # ------------------------------------------------------
-# # Страница выхода из админки
-# @app.route('/logout', methods=["POST"])
-# def do_the_logout():
-#     pass
-#     # (код выхода из админки)
-#
-#
+# ------------------------------------------------------
+# Страница выхода из админки
+@app.route('/logout/')
+def do_the_logout():
+    session.pop("user")
+    # (код выхода из админки)
+    return redirect('/')
 
 
 # ------------------------------------------------------
 # Страница добавления пользователя
 @app.route("/registration/", methods=["GET", "POST"])
 def do_the_reg():
-    if session.get("user_id"):
+    if session.get('user_id'):
         return redirect("/")
     cart_info = get_right_cart_end()
     # Создаем форму
@@ -149,6 +142,7 @@ def do_the_reg():
                 db.session.add(user)
                 db.session.commit()
                 session['user'] = {'user_id': user.u_id, 'mail': user.mail}
+                return redirect('/account/')
             else:
                 form.errors['auth'] = ['Пользователь с таким email уже существует']
                 return render_template("register.html", form=form, cart_info=cart_info)
@@ -156,19 +150,31 @@ def do_the_reg():
             return render_template("register.html", form=form, cart_info=cart_info)
     else:
         return render_template("register.html", form=form, cart_info=cart_info)
-#
-#
-# # ------------------------------------------------------
-# # для подтверждения отправки
-# @app.route("/ordered/", methods=["GET", "POST"])
-# def show_the_order():
-#     pass
-#     # (код страницы для подтверждения отправки)
-#
-#
-# # ------------------------------------------------------
-# # для личного кабинета
-# @app.route("/account/", methods=["GET", "POST"])
-# def show_the_lk():
-#     pass
-#     # (код страницы для лк)
+
+
+# ------------------------------------------------------
+# для подтверждения отправки
+@app.route("/ordered/", methods=["GET", "POST"])
+def show_the_order():
+    if request.method == "POST":
+        form = OrderForm()
+        if form.validate_on_submit():
+            dishes_ids = session['cart']
+            date = datetime.datetime
+            user = db.session.query(User).get(session['user']['user_id'])
+            print(user)
+            user.address = form.address.data
+            user.name = form.username.data
+            order = Order(price=form.price.data, date=date, dishes=dishes_ids, buyer_id=user)
+            db.session.add(order, user)
+            db.session.commit()
+        return render_template('ordered.html')
+    return redirect('/cart/')
+
+
+# ------------------------------------------------------
+# для личного кабинета
+@app.route("/account/", methods=["GET", "POST"])
+def show_the_lk():
+    cart_info = get_right_cart_end()
+    return render_template('account.html', cart_info=cart_info)

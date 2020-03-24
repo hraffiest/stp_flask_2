@@ -29,13 +29,14 @@
     <h1 class="h3 my-4">Корзина</h1>
 
     <div class="alert alert-warning" role="alert">Блюдо удалено из корзины</div>
-    <div class="alert alert-warning" role="alert">Чтобы сделать заказ – <a href="/login.html">войдите</a> или <a href="/register.html">зарегистрируйтесь</a></div>
-
+    {% if not session.user %}
+    <div class="alert alert-warning" role="alert">Чтобы сделать заказ – <a href="/login/">войдите</a> или <a href="/registration/">зарегистрируйтесь</a></div>
+    {% endif %}
     <div class="row mt-5">
 
 
         <div class="col-4">
-          <form action="/cart/" method="POST">
+          <form action="/ordered/" method="POST">
               <h4>Ваши данные</h4>
               <div class=" md-4 order-md-1">
                   {% for field in form.errors %}
@@ -57,15 +58,18 @@
                     {{ form.address(class="font-weight-bold form-control") }}
                   </div>
                 </div>
+                {% if not session.user %}
                 <div class="md-4 form-label-group">
                   {{ form.email.label }}
                   {{ form.email(autofocus=true, class="form-control") }}
                 </div>
+                {% endif %}
                 <div class=" md-3 order-md-1">
                   <div class="mt-3 mb-3">
                     {{ form.telephone.label }}
                     {{ form.telephone(class="font-weight-bold form-control") }}
                   </div>
+                    {{ form.price(class="form-control") }}
           <button type="submit" class="mt-3 mb-5 btn btn-danger">Оформить заказ</button>
           </form>
         </div>
