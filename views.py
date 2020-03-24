@@ -185,3 +185,4 @@ def show_the_lk():
     cart_info = get_right_cart_end()
     orders = db.session.query(Order).filter(Order.buyer_id == session['user']['user_id']).all()
     return render_template('account.html', cart_info=cart_info, orders=orders)
+
