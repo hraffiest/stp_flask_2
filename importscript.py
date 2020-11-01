@@ -20,5 +20,3 @@ with open('data.csv', 'r') as data:
 # import works only with commit in cycle 'for'. Why?
 with app.app_context():
     db.session.commit()
-
-

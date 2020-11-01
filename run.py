@@ -1,4 +1,5 @@
-import __init__
+from . import app
 from config import Config
 
-__init__.app.run(port=1861, debug=Config.DEBUG)
+if __name__ == 'main':
+    app.run(port=1861, debug=Config.DEBUG)
