@@ -1,12 +1,11 @@
 FROM python:3.8-alpine
 LABEL org.stepik.version==v0.1
 
-COPY requirements.txt /
+ADD . /test_project
+WORKDIR /test_project
 
 RUN pip install -r requirements.txt
-
-ADD . /
-WORKDIR /
+RUN pip install gunicorn
 
 EXPOSE 1861
 
