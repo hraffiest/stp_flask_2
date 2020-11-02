@@ -3,7 +3,7 @@ LABEL org.stepik.version==v0.1
 
 RUN mkdir -p /var/test_project
 WORKDIR /var/test_project
-ADD . .
+ADD /src .
 
 RUN pip install -r requirements.txt
 RUN pip install gunicorn
