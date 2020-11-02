@@ -1,8 +1,9 @@
 FROM python:3.8-alpine
 LABEL org.stepik.version==v0.1
 
-WORKDIR /test_project
-ADD . /test_project
+RUN mkdir -p /var/test_project
+WORKDIR /var/test_project
+ADD . .
 
 RUN pip install -r requirements.txt
 RUN pip install gunicorn
